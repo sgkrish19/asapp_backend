@@ -26,7 +26,26 @@ const connection = mysql.createConnection({
     database: process.env.DB_NAME
 });
 
-connection.connect();
+connection.connect((err) => {
+    if (err) {
+        console.error('Error connecting to the database:', err.stack);
+        process.exit(1); // Exit the process if there's a connection error
+    } else {
+        console.log('Connected to the database as id ' + connection.threadId);
+    }
+});
+
+connection.on('error', (err) => {
+    console.error('Database error:', err);
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+        console.error('Database connection was closed.');
+    } else if (err.code === 'ER_CON_COUNT_ERROR') {
+        console.error('Database has too many connections.');
+    } else if (err.code === 'ECONNREFUSED') {
+        console.error('Database connection was refused.');
+    }
+    process.exit(1); // Exit the process if there's an error
+});
 
 function processJson(data) {
     let processedData = {
@@ -136,6 +155,7 @@ const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
 
 
 

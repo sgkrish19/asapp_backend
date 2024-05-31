@@ -16,8 +16,9 @@ app.use(cors({origin:true, credentials:true}));
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: process.env.FRONTEND_URL,
-    methods: ["GET"],
+    // origin: process.env.FRONTEND_URL,
+    origin: true,
+    methods: ["GET"] 
   },
 });
 
